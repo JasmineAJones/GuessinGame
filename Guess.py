@@ -4,7 +4,7 @@ from random import random, uniform
 from threading import Event
 from xml.sax.handler import feature_external_ges
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractScrollArea
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractScrollArea, QWidget
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import inch
 import openpyxl
@@ -14,6 +14,8 @@ import textwrap
 from reportlab.lib import colors
 from datetime import datetime
 import time
+
+from YouLose import Ui_Form
 
 def rand(gues):
     x = int(uniform(1,4))
@@ -43,13 +45,9 @@ def toIntm(p):
     p = float(pp)
     return p
 
-class Window2(QMainWindow):                           # <===
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Window22222")
-
+### if money == 0, open new window
 class Ui_MainWindow(object):
-
+    
     def one_btn(self):
         self.winLose.clear()
         m = toIntm(self.money.toPlainText())
@@ -94,7 +92,12 @@ class Ui_MainWindow(object):
             time.sleep(1)
             self.winLose.setText("You Lost :(")            
             self.money.setText("$"+str(lost(m,p)))
-
+        
+    def youLoseWindow(self):                                             # <===
+        ui = Ui_Form()
+        win = QWidget()
+        ui.setupUi(win)
+        win.show()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -200,11 +203,6 @@ class Ui_MainWindow(object):
         self.percentBox.setItemText(6, _translate("MainWindow", "100%"))
         self.money.setText(_translate("MainWindow", "$200"))
         self.Title.setText(_translate("MainWindow", "Guessing Game"))
-
-    def window2(self):                                             # <===
-        self.w = Window2()
-        self.w.show()
-        self.hide()
 
     
 
