@@ -1,20 +1,16 @@
-from cmath import sqrt
-from datetime import datetime
-from random import random, uniform
-from threading import Event
-from xml.sax.handler import feature_external_ges
+
+from random import uniform
+
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QThread, QObject, QCoreApplication
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractScrollArea, QWidget
-from reportlab.pdfgen.canvas import Canvas
-from reportlab.lib.units import inch
-import openpyxl
-import os
-from reportlab.lib.pagesizes import letter
-import textwrap
-from reportlab.lib import colors
-from datetime import datetime
+
 import time
+
+from datetime import datetime
+
+### Below is a guessing gambling game. You have a choice between 1,2 or 3 And can choose your wager amount based on how much money you have. You start out with $200 and the game ends 
+### once you've accumulated $10,000 or more
 
 
 
@@ -49,6 +45,8 @@ def toIntm(p):
 def checkmon(m):
     if m <= 0.01:
         return True
+    elif m >= 400:
+        return 'won'
 
 
 class Ui_MainWindow(object):
@@ -70,8 +68,9 @@ class Ui_MainWindow(object):
 
             m = toIntm(self.money.toPlainText())
             if checkmon(m) == True:
-                #GuessWindow.close()
-                self.openLoseWindow()  
+                self.openLoseWindow()
+            elif checkmon(m) == 'won':
+                self.openWinWindow()  
         self.count = self.count+1
 
  
@@ -81,6 +80,13 @@ class Ui_MainWindow(object):
         self.LostWindow = QWidget()
         self.ui.setupUi(self.LostWindow,self.count)
         self.LostWindow.show()
+
+    def openWinWindow(self): ### Opening win window
+                                                 
+        self.ui = Ui_Form2()
+        self.WinWindow = QWidget()
+        self.ui.setupUi(self.WinWindow,self.money.toPlainText())
+        self.WinWindow.show()
 
     def setupUi(self, MainWindow):
         self.count = 1
@@ -249,9 +255,69 @@ class Ui_Form(object):
         self.Title.setText(_translate("Form", "You Lose! Retry?"))
         self.yes.setText(_translate("Form", "Yes"))
         self.no.setText(_translate("Form", "No"))
-        self.roundLabel.setText(_translate("Form", "Rounds:"))    
+        self.roundLabel.setText(_translate("Form", "Rounds:"))   
 
+class Ui_Form2(object):
 
+    def clicked_yes(self):
+        QApplication.closeAllWindows()
+        self.GuessWindow = QMainWindow()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self.GuessWindow)
+        self.GuessWindow.show()
+
+    def clicked_no(self):
+        sys.exit()
+
+    def setupUi(self, Form, mon):
+        Form.setObjectName("Form")
+        Form.resize(267, 170)
+        Form.setMinimumSize(QtCore.QSize(267, 170))
+        Form.setMaximumSize(QtCore.QSize(267, 170))
+        self.gridLayout = QtWidgets.QGridLayout(Form)
+        self.gridLayout.setObjectName("gridLayout")
+        self.Title = QtWidgets.QLabel(Form)
+        font = QtGui.QFont()
+        font.setFamily("High Tower Text")
+        font.setPointSize(14)
+        self.Title.setFont(font)
+        self.Title.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.Title.setAutoFillBackground(False)
+        self.Title.setTextFormat(QtCore.Qt.AutoText)
+        self.Title.setScaledContents(False)
+        self.Title.setObjectName("Title")
+        self.gridLayout.addWidget(self.Title, 1, 3, 1, 1)
+
+        self.yes = QtWidgets.QPushButton(Form)
+        self.yes.setObjectName("yes")
+        self.gridLayout.addWidget(self.yes, 14, 3, 1, 1)
+        self.yes.clicked.connect(self.clicked_yes)
+
+        self.no = QtWidgets.QPushButton(Form)
+        self.no.setObjectName("no")
+        self.gridLayout.addWidget(self.no, 15, 3, 1, 1)
+        self.no.clicked.connect(self.clicked_no)
+        
+        self.roundLabel = QtWidgets.QLabel(Form)
+        self.roundLabel.setObjectName("roundLabel")
+        self.gridLayout.addWidget(self.roundLabel, 3, 3, 1, 1)
+        self.rounds = QtWidgets.QTextBrowser(Form)
+        self.rounds.setEnabled(True)
+        self.rounds.setMaximumSize(QtCore.QSize(50, 25))
+        self.rounds.setObjectName("rounds")
+        self.rounds.setText(mon)
+        self.gridLayout.addWidget(self.rounds, 4, 3, 1, 1)
+
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.Title.setText(_translate("Form", "You Win! Try Again?"))
+        self.yes.setText(_translate("Form", "Yes"))
+        self.no.setText(_translate("Form", "No"))
+        self.roundLabel.setText(_translate("Form", "Money:"))   
 
 if __name__ == "__main__": #### Creates Scene ####
     import sys
@@ -259,6 +325,7 @@ if __name__ == "__main__": #### Creates Scene ####
     ui = Ui_MainWindow()
     GuessWindow = QMainWindow()
     LostWindow = QWidget()
+    WinWindow = QWidget()
     ui.setupUi(GuessWindow)
     GuessWindow.show()
     sys.exit(app.exec())
