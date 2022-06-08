@@ -4,6 +4,7 @@ from random import random, uniform
 from threading import Event
 from xml.sax.handler import feature_external_ges
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QThread, QObject, QCoreApplication
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractScrollArea, QWidget
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import inch
@@ -14,8 +15,8 @@ import textwrap
 from reportlab.lib import colors
 from datetime import datetime
 import time
+import YouLose
 
-from YouLose import Ui_Form
 
 def rand(gues):
     x = int(uniform(1,4))
@@ -45,61 +46,51 @@ def toIntm(p):
     p = float(pp)
     return p
 
+def checkmon(m):
+    if m <= 0.01:
+        
+        return True
+
 ### if money == 0, open new window
 class Ui_MainWindow(object):
     
-    def one_btn(self):
+    def clicked_btn(self,n):
         self.winLose.clear()
         m = toIntm(self.money.toPlainText())
         p = toIntp(self.percentBox.currentText())
 
-        if rand(1) == True:
+        if rand(n) == True:
             time.sleep(1)
             self.winLose.setText("You Won!!")
             self.money.setText("$"+str(won(m,p)))
+
+            m = toIntm(self.money.toPlainText())
+            if checkmon(m) == True:
+                self.youLoseWindow()
             
         else:
             time.sleep(1)
             self.winLose.setText("You Lost :(") 
             self.money.setText("$"+str(lost(m,p)))
 
-    def two_btn(self):
-        self.winLose.clear()
-        m = toIntm(self.money.toPlainText())
-        p = toIntp(self.percentBox.currentText())
+            m = toIntm(self.money.toPlainText())
+            if checkmon(m) == True:
+                self.youLoseWindow()
+                GuessWindow.close()
+    
+        self.count = self.count+1
 
-        if rand(2) == True:
-            time.sleep(1)
-            self.winLose.setText("You Won!!")
-            self.money.setText("$"+str(won(m,p)))
-            
-        else:
-            time.sleep(1)
-            self.winLose.setText("You Lost :(") 
-            self.money.setText("$"+str(lost(m,p)))
-
-    def three_btn(self):
-        self.winLose.clear()
-        m = toIntm(self.money.toPlainText())
-        p = toIntp(self.percentBox.currentText())
-
-        if rand(3) == True:
-            time.sleep(1)
-            self.winLose.setText("You Won!!")
-            self.money.setText("$"+str(won(m,p)))
-            
-        else:
-            time.sleep(1)
-            self.winLose.setText("You Lost :(")            
-            self.money.setText("$"+str(lost(m,p)))
-        
-    def youLoseWindow(self):                                             # <===
-        ui = Ui_Form()
-        win = QWidget()
-        ui.setupUi(win)
-        win.show()
+ 
+    def youLoseWindow(self):
+                                                     # <===
+        self.LostWindow = QWidget()
+        self.ui = YouLose.Ui_Form()
+        self.ui.setupUi(self.LostWindow,self.count)
+        self.LostWindow.show()
 
     def setupUi(self, MainWindow):
+        self.count = 1
+        
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(332, 250)
         MainWindow.setMinimumSize(QtCore.QSize(332, 250))
@@ -125,20 +116,20 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.winLose, 10, 1, 1, 4)
 
 
-        self.two = QtWidgets.QPushButton(self.centralwidget)
-        self.two.setObjectName("two")
-        self.gridLayout.addWidget(self.two, 8, 3, 1, 1)
-        self.two.clicked.connect(self.two_btn)
-
         self.one = QtWidgets.QPushButton(self.centralwidget)
         self.one.setObjectName("one")
         self.gridLayout.addWidget(self.one, 8, 2, 1, 1)
-        self.one.clicked.connect(self.one_btn)
+        self.one.clicked.connect(lambda: self.clicked_btn(1))
+
+        self.two = QtWidgets.QPushButton(self.centralwidget)
+        self.two.setObjectName("two")
+        self.gridLayout.addWidget(self.two, 8, 3, 1, 1)
+        self.two.clicked.connect(lambda: self.clicked_btn(2))
 
         self.three = QtWidgets.QPushButton(self.centralwidget)
         self.three.setObjectName("three")
         self.gridLayout.addWidget(self.three, 8, 4, 1, 1)
-        self.three.clicked.connect(self.three_btn)
+        self.three.clicked.connect(lambda: self.clicked_btn(3))
 
         self.prompt = QtWidgets.QLabel(self.centralwidget)
         self.prompt.setObjectName("prompt")
@@ -212,7 +203,7 @@ if __name__ == "__main__": #### Creates Scene ####
     import sys
     app = QApplication(sys.argv)
     ui = Ui_MainWindow()
-    win = QMainWindow()
-    ui.setupUi(win)
-    win.show()
+    GuessWindow = QMainWindow()
+    ui.setupUi(GuessWindow)
+    GuessWindow.show()
     sys.exit(app.exec())
