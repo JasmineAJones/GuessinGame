@@ -3,7 +3,7 @@ from random import uniform
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractScrollArea, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractScrollArea, QWidget, QSizePolicy
 
 import time
 
@@ -92,9 +92,11 @@ class Ui_MainWindow(object):
         self.count = 1
         
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(332, 250)
-        MainWindow.setMinimumSize(QtCore.QSize(332, 250))
-        MainWindow.setMaximumSize(QtCore.QSize(700, 700))
+        #MainWindow.resize(332, 250)
+        #MainWindow.setMinimumSize(QtCore.QSize(332, 250))
+        #MainWindow.setMaximumSize(QtCore.QSize(700, 700))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        MainWindow.setSizePolicy(sizePolicy)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
